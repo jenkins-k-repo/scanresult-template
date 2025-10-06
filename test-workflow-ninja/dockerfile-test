@@ -1,0 +1,41 @@
+FROM ubuntu:22.04 AS builder
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    git gcc make bash curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV GOROOT_BOOTSTRAP=/usr/local/go-bootstrap
+
+# Install a bootstrap Go version (required for building Go)
+RUN curl -LO https://go.dev/dl/go1.20.14.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.20.14.linux-amd64.tar.gz && \
+    mv /usr/local/go /usr/local/go-bootstrap
+
+# Clone the Go source code
+RUN git clone https://github.com/golang/go.git /usr/local/go-src
+
+# Set Go version to build (optional)
+WORKDIR /usr/local/go-src
+RUN git checkout go1.22.0  # Change to the version you want
+
+# Build Go from source
+WORKDIR /usr/local/go-src/src
+RUN ./make.bash
+
+# Final minimal image
+FROM ubuntu:22.04
+
+# Install required tools
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+
+# Copy the built Go toolchain
+COPY --from=builder /usr/local/go-src /usr/local/go
+
+# Set Go environment
+ENV GOROOT=/usr/local/go
+ENV PATH=$GOROOT/bin:$PATH
+
+# Verify installation
+CMD ["go", "version"]
