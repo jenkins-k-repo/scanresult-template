@@ -1,0 +1,35 @@
+name: Coverity scan
+
+on:
+  push:
+    branches:
+    - oidc-demo
+
+jobs:
+  coverity-codescan:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read 
+      
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v3
+
+      - name: Workflow detail api request
+        shell: bash
+        run: |
+          echo "Ref name is $GITHUB_RUN_ID"
+          echo "Source is ${{ github.server_url }}/${{ github.repository }}"
+          echo "Subject is $GITHUB_WORKFLOW_REF|${{ github.run_id }}|${{ github.run_attempt }}|${{ github.run_number }}"
+          echo "Job is $GITHUB_JOB"
+          echo "Step id is ${{ steps.internal.id }}"
+
+      - name: Coverity scan
+        uses: cloudbees-io-gha/coverity-scan-publish@v2
+        with:
+          server-url: ${{ vars.COVERITY_SERVER_URL }}
+          api-token: ${{ secrets.COVERITY_API_TOKEN }}
+
+
+
