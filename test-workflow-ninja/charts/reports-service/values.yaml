@@ -1,0 +1,34 @@
+base:
+  image:
+    repository: reports-service
+  livenessProbe:
+    path: "/z/health?service=api.vsm.report.ReportServiceHandler"
+    scheme: HTTPS
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+  readinessProbe:
+    path: "/z/health?service=api.vsm.report.ReportServiceHandler"
+    scheme: HTTPS
+    periodSeconds: 10
+    successThreshold: 2
+    timeoutSeconds: 5
+  service:
+    port: 8112
+  directEnv:
+    SERVER_ALLOW_PPROF: true
+    SERVER_ALLOW_STOP: true
+    SERVER_LISTEN_PORT: 8112
+    REPORT_DEFINITION_FILEPATH: "./resources/"
+    LOG_FORMAT: json
+    ENABLE_AUTH_V2: true
+    LOG_CLAIMS: true
+  resources:
+    limits:
+      cpu: 1500m
+      memory: 2Gi
+    requests:
+      cpu: 200m
+      memory: 500Mi
+
+

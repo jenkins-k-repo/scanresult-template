@@ -1,0 +1,17 @@
+apiVersion: v2
+name: reports-service
+description: Database service
+icon: https://www.cloudbees.com/sites/default/files/cloudbees-infinity-branding-element.png
+home: https://github.com/calculi-corp/reports-service
+sources:
+  - https://github.com/calculi-corp/reports-service
+maintainers:
+  - name: CloudBees
+type: application
+version: "0.0.1"
+appVersion: "0.0.1"
+dependencies:
+  - name: platform-service
+    version: "0.0.39"
+    repository: "oci://020229604682.dkr.ecr.us-east-1.amazonaws.com/service-charts"
+    alias: base
